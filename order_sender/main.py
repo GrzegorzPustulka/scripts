@@ -1,6 +1,7 @@
 import random
 import json
 import pika
+import uuid
 
 connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
 channel = connection.channel()
@@ -11,8 +12,8 @@ available_meals = [
     "fish", "sushi", "burger", "tacos", "burrito", "shrimp", "lobster", "cake", "ice cream", "fruit"
 ]
 
-for i in range(random.randint(10, 15)):
-    id = str(i+1)
+for _ in range(random.randint(10, 15)):
+    id = str(uuid.uuid4())
     meals = []
 
     random.shuffle(available_meals)

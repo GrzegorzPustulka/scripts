@@ -41,7 +41,7 @@ def generate_time():
 
 for _ in range(random.randint(10, 15)):
     id = str(uuid.uuid4())
-    time = generate_time()
+    orderDateTime = str(generate_time())
     meals = []
 
     random.shuffle(available_meals)
@@ -50,7 +50,7 @@ for _ in range(random.randint(10, 15)):
         count = random.randint(1, 5)
         meals.append({"meal": meal, "count": count})
 
-    message = {"id": id, "time": time, "meals": meals}
+    message = {"id": id, "time": orderDateTime, "meals": meals}
 
     channel.basic_publish(
         exchange="", routing_key="orders_queue", body=json.dumps(message)

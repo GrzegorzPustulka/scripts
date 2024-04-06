@@ -1,6 +1,6 @@
 import random
 import json
-from datetime import datetime
+from datetime import datetime, timedelta
 
 import pika
 import uuid
@@ -32,16 +32,28 @@ available_meals = [
     "fruit",
 ]
 
-
-def generate_time():
-    now = datetime.now()
-    random_minute = random.randint(0, 59)
-    return now.replace(minute=random_minute, second=0, microsecond=0)
-
+notes = [
+    "Herbatę proszę bez cukru.",
+    "Stek medium rare, proszę.",
+    "Bez cebuli w burgerze.",
+    "Dodatkowy ser do pizzy.",
+    "Frytki zamiast ryżu.",
+    "Sos czosnkowy na boku.",
+    "Bez soli w zupie.",
+    "Espresso z podwójnym shotem.",
+    "Sałatka bez dressingu.",
+    "Extra pikantne curry.",
+    "Pieczone ziemniaki zamiast purée.",
+    "Brak lodu w napoju.",
+    "Makaron al dente.",
+    "Pierś z kurczaka, nie udziec.",
+    "Bez glutenu, proszę."
+]
 
 for _ in range(random.randint(10, 15)):
     id = str(uuid.uuid4())
-    orderDateTime = str(generate_time())
+    note = random.choice(notes)
+    orderDateTime = str(datetime.now())
     meals = []
 
     random.shuffle(available_meals)
@@ -50,7 +62,7 @@ for _ in range(random.randint(10, 15)):
         count = random.randint(1, 5)
         meals.append({"meal": meal, "count": count})
 
-    message = {"id": id, "time": orderDateTime, "meals": meals}
+    message = {"id": id, "orderDateTime": orderDateTime, "notes": note, "meals": meals}
 
     channel.basic_publish(
         exchange="", routing_key="orders_queue", body=json.dumps(message)

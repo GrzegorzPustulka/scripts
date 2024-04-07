@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Orders Update with WebSockets</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .order {
+            margin-bottom: 10px;
+            padding: 10px;
+            background-color: #f0f0f0;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Live Orders Update with WebSockets</h1>
+    <div id="orders"></div>
+
+    <script>
+        const ordersContainer = document.getElementById('orders');
+
+        function displayOrder(order) {
+            const orderElement = document.createElement('div');
+            orderElement.classList.add('order');
+            orderElement.textContent = `Order ID: ${order.id}, Data: ${JSON.stringify(order)}`;
+            ordersContainer.appendChild(orderElement);
+        }
+
+        const socket = new WebSocket('ws://localhost:8000/ws');
+
+        socket.onopen = function(e) {
+            console.log("[open] Connection established");
+            console.log("Sending to server");
+            socket.send("My name is John");
+        };
+
+        socket.onmessage = function(event) {
+            console.log(`[message] Data received from server: ${event.data}`);
+            const orders = JSON.parse(event.data);
+            ordersContainer.innerHTML = ''; // Wyczyść listę zamówień
+            orders.forEach(order => displayOrder(order));
+        };
+
+        socket.onclose = function(event) {
+            if (event.wasClean) {
+                console.log(`[close] Connection closed cleanly, code=${event.code} reason=${event.reason}`);
+            } else {
+                console.log('[close] Connection died');
+            }
+        };
+
+        socket.onerror = function(error) {
+            console.log(`[error] ${error.message}`);
+        };
+    </script>
+</body>
+</html>
